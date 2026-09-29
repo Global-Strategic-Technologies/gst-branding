@@ -76,6 +76,8 @@ Shared status colors for cross-tool consistency. See [BRAND_GUIDELINES.md — Se
 | `--bg-dark-secondary` | `#1a1a1a` | `#1a1a1a` | Secondary dark background              |
 | `--bg-dark-tertiary`  | `#141414` | `#141414` | Tertiary dark background               |
 
+**Dim states** ([ADR-0038](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/docs/adr/0038-four-state-theme-dim-light-dim-dark.md)): `html.theme-dim` re-declares these five as `light-dark(dim light, dim dark)`. The values are `--bg-light` `#ebebeb` / `#1c1c1c`, `--bg-light-alt` `#dcdcdc` / `#202020`, `--bg-dark` `#0a0a0a` / `#1c1c1c`, `--bg-dark-secondary` `#1a1a1a` / `#262626` and `--bg-dark-tertiary` `#141414` / `#202020`. It also covers the `--surface-veil/panel/overlay-bg` washes, the section backgrounds (`--footer-bg`, `--cta-box-bg`, `--search-input-focus-bg`), and raises three text alphas (`--text-muted`, `--text-dark-muted`, `--clear-filters-text`). The dim-light inks are in `palettes.css` § Dim-light inks. The dark constants lift so that panels painted with them stay lighter than a dim-dark page.
+
 ## Text Colors
 
 ### Theme-Agnostic Aliases (preferred)
@@ -243,7 +245,7 @@ Canonical stacking tiers — use these instead of raw numeric `z-index` values. 
 
 | Variable               | Value   | Usage                                           |
 | ---------------------- | ------- | ----------------------------------------------- |
-| `--z-negative`         | `-1`    | Behind content (`body::before` background grid) |
+| `--z-negative`         | `-1`    | Behind content (published; no in-repo consumer) |
 | `--z-base`             | `1`     | Normal content stacking                         |
 | `--z-raised`           | `5`     | Tool content layers (maps, charts)              |
 | `--z-sticky`           | `10`    | Sticky headers, dropdowns anchored to content   |
@@ -263,12 +265,10 @@ These variables exist for page sections and UI components that need distinct lig
 
 ### Section Backgrounds
 
-| Variable            | Light             | Dark                       |
-| ------------------- | ----------------- | -------------------------- |
-| `--services-bg`     | `#eeeeee`         | `var(--bg-dark-tertiary)`  |
-| `--footer-bg`       | `#eeeeee`         | `var(--bg-dark-tertiary)`  |
-| `--cta-box-bg`      | `var(--bg-light)` | `var(--bg-dark-secondary)` |
-| `--service-card-bg` | `var(--bg-dark)`  | `var(--bg-dark-secondary)` |
+| Variable       | Light             | Dark                       |
+| -------------- | ----------------- | -------------------------- |
+| `--footer-bg`  | `#eeeeee`         | `var(--bg-dark-tertiary)`  |
+| `--cta-box-bg` | `var(--bg-light)` | `var(--bg-dark-secondary)` |
 
 ### Filter UI
 
@@ -293,39 +293,29 @@ These variables exist for page sections and UI components that need distinct lig
 | `--clear-filters-text`        | `rgba(26,26,26, 0.6)`     | `rgba(200,200,200, 0.6)`   |
 | `--clear-filters-border`      | `rgba(26,26,26, 0.1)`     | `var(--color-primary-20)`  |
 
-### Section Text & Borders
+### Section Text
 
-| Variable                 | Light                      | Dark                       |
-| ------------------------ | -------------------------- | -------------------------- |
-| `--service-card-text`    | `#b0b0b0`                  | `#d0d0d0`                  |
-| `--service-card-heading` | `var(--bg-light)`          | `var(--bg-light)`          |
-| `--service-card-border`  | `var(--bg-dark-secondary)` | `#2a2a2a`                  |
-| `--footer-text`          | `rgba(26,26,26, 0.85)`     | `rgba(153,153,153, 0.85)`  |
-| `--footer-border`        | `rgba(26,26,26, 0.1)`      | `rgba(153,153,153, 0.15)`  |
-| `--cta-box-text`         | `rgba(26,26,26, 0.85)`     | `rgba(200,200,200, 0.8)`   |
-| `--stat-item-border`     | `var(--color-primary)`     | `var(--color-primary-20)`  |
-| `--about-image-bg`       | `var(--bg-dark-tertiary)`  | `var(--bg-dark-secondary)` |
-| `--about-image-border`   | `var(--bg-dark-secondary)` | `#2a2a2a`                  |
-| `--about-image-text`     | `#404040`                  | `#808080`                  |
+| Variable         | Light                  | Dark                     |
+| ---------------- | ---------------------- | ------------------------ |
+| `--cta-box-text` | `rgba(26,26,26, 0.85)` | `rgba(200,200,200, 0.8)` |
 
 ### Announcement Sash
 
-The tokens `.brutal-sash` reads (`src/styles/components/sash.css`). Borders, hover and the under-band's inversion are derived from the first two with `color-mix()`, so they follow all six palettes and both themes with no extra CSS; the badge chip reads the third under constant `--bg-dark` ink (measured at every palette × theme when it left the two-token pair, 2026-08-28).
+The tokens `.brutal-sash` reads (`src/styles/components/sash.css`). Borders, hover and the under-band's inversion are derived from the first two with `color-mix()`, so they follow every palette and both themes with no extra CSS; the badge chip reads the third under constant `--bg-dark` ink (measured at every palette × theme when it left the two-token pair, 2026-08-28).
 
-| Variable          | Value                    | Usage                                           |
-| ----------------- | ------------------------ | ----------------------------------------------- |
-| `--sash-bg`       | `var(--color-primary)`   | The band. Colour is never a variant of the sash |
-| `--sash-ink`      | `var(--bg-dark)`         | The label, and the under-band's background      |
-| `--sash-badge-bg` | `var(--color-secondary)` | The badge chip's fill, under `--bg-dark` ink    |
+| Variable          | Value                              | Usage                                           |
+| ----------------- | ---------------------------------- | ----------------------------------------------- |
+| `--sash-bg`       | `var(--color-primary)`             | The band. Colour is never a variant of the sash |
+| `--sash-ink`      | `var(--bg-dark)`; `#0a0a0a` in dim | The label, and the under-band's background      |
+| `--sash-badge-bg` | `var(--color-secondary)`           | The badge chip's fill, under `--bg-dark` ink    |
 
-`--sash-ink` is re-pointed in `palettes.css` for `palette-1`, `-2`, `-3` and `-5`, whose light-theme primary is a dark saturated hue: those get `light-dark(var(--text-dark-primary), var(--bg-dark))`. Note the token names read backwards — `--text-dark-primary` is the LIGHT ink, i.e. text _for_ dark surfaces. `palette-0` and `palette-4` inherit the `:root` value deliberately. `--sash-badge-bg` is re-pointed for `palette-1` only (`#f472b6`, its dark-theme secondary promoted to both themes): the light-theme `#db2777` was the one combo of twelve measuring under 4.5:1 against the chip's dark ink.
+No palette re-points `--sash-ink`: since BL-165 every palette's primary is light enough for the dark ink in both themes (palettes 1, 3 and 5 had their light-theme fills lightened for exactly this). A future palette whose light-theme primary is dark would add `--sash-ink: light-dark(var(--text-dark-primary), var(--bg-dark))` — note the token names read backwards, `--text-dark-primary` is the LIGHT ink, i.e. text _for_ dark surfaces. `--sash-badge-bg` is re-pointed for two palettes whose light-theme secondary measures under 4.5:1 against the chip's dark ink: `palette-1` (`#a6a6a6`, its dark-theme secondary promoted to both themes, replacing `#595959`) and `palette-4` (`#60a5fa`, replacing `#1d4ed8` — light theme only in effect, since that is already its dark-theme secondary).
 
 ### Miscellaneous
 
-| Variable               | Light                 | Dark                       |
-| ---------------------- | --------------------- | -------------------------- |
-| `--checkerboard-line`  | `rgba(0,0,0, 0.032)`  | `rgba(255,255,255, 0.032)` |
-| `--theme-toggle-color` | `rgba(74,74,74, 0.8)` | `rgba(200,200,200, 0.8)`   |
+| Variable              | Light                | Dark                       |
+| --------------------- | -------------------- | -------------------------- |
+| `--checkerboard-line` | `rgba(0,0,0, 0.032)` | `rgba(255,255,255, 0.032)` |
 
 ---
 
@@ -423,10 +413,8 @@ Cross-tool semantic colors shared by multiple hub tools.
 | `--dm-results-tan`       | `var(--color-subdued)`    | _(inherits)_             | Results theme secondary       |
 | `--dm-positive`          | `var(--color-success)`    | _(inherits)_             | Positive indicator            |
 | `--dm-negative`          | `var(--color-error)`      | _(inherits)_             | Negative/red flag indicator   |
-| `--dm-negative-dark`     | `var(--color-error)`      | _(inherits)_             | Strong negative indicator     |
 | `--dm-negative-dark-bg`  | `rgba(178, 34, 34, 0.06)` | `rgba(178, 34, 34, 0.1)` | Negative indicator background |
 | `--dm-warning`           | `var(--color-warning)`    | _(inherits)_             | Warning indicator             |
-| `--dm-warning-dark`      | `var(--color-warning)`    | _(inherits)_             | Strong warning indicator      |
 | `--dm-success`           | `var(--color-success)`    | _(inherits)_             | Success indicator             |
 
 ### ICG Maturity Colors
@@ -473,7 +461,7 @@ Cross-tool semantic colors shared by multiple hub tools.
 
 ## Alternative Palette Variables (`palettes.css`)
 
-Six alternative color palettes override the core tokens when applied to `<html>`. Defined in `src/styles/palettes.css`.
+The alternative color palettes override the core tokens when applied to `<html>`. Defined in `src/styles/palettes.css`.
 
 ### Palette Alt-Color Definitions
 
@@ -491,7 +479,7 @@ Each palette defines light and dark theme variants for 6 core colors + 3 expande
 | `--altN-color-distinguish`  | Differentiation accent             |
 | `--altN-color-subdued`      | Muted neutral                      |
 
-Where N = 0–5. Palette 0 only overrides the 3 expanded tokens (production palette keeps core colors from `variables.css`). Palettes 1–5 override all 9 tokens plus derived accent/border/opacity scales.
+Where N = 0–6. Palette 0 only overrides the 3 expanded tokens (the base palette keeps core colors from `variables.css`). Palettes 1–6 override all 9 tokens; the opacity scales follow from `--color-primary-rgb`.
 
 ### Palette Override Classes
 
@@ -503,11 +491,11 @@ html.palette-1 {
 }
 ```
 
-Also overrides `--color-primary-rgb`, `--border-dark`, `--accent-light-bg`, `--accent-light-bg-hover`, `--accent-border-light`, `--accent-border-medium`, and `--stat-item-border`.
+Also overrides `--color-primary-rgb`, `--color-tertiary` / `-tertiary-dark` and the seven `-ink` tokens; palettes 1 and 4 re-point `--sash-badge-bg`.
 
 ### Tool Derivation
 
-`html[class*="palette-"]` maps expanded tokens to all tool-domain variables (TechPar zones, DM domains, ICG maturity, RegMap categories) so tool pages automatically inherit palette changes.
+The tool-domain variables (TechPar zones, DM domains, ICG maturity, RegMap categories) are declared once in `variables.css` `:root` as `var()` references to the expanded tokens. A palette class re-points those expanded tokens on the same `<html>` element, and a custom property's `var()` resolves against the element it is declared on, so every tool page inherits the palette with no per-palette redeclaration. Add a new tool derivation to `:root` only.
 
 ---
 
@@ -529,5 +517,4 @@ Also overrides `--color-primary-rgb`, `--border-dark`, `--accent-light-bg`, `--a
 
 ---
 
-**Last Updated**: July 28, 2026
 **Parity**: every `:root` token in `variables.css` ↔ every table row here — machine-enforced by `tests/integration/docs-variables-sync.test.ts` (`npm run test:docs`); token counts are deliberately not stated (the test, not this footer, is the referee)

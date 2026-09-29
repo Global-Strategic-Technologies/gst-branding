@@ -8,7 +8,7 @@ B="$(cd "$(dirname "$0")/.." && pwd)"
 W="${1:-$B/../gst-website}"
 DS="$W/ds-bundle"
 [ -f "$DS/_ds_bundle.css" ] || { echo "No ds-bundle at $DS — build it in gst-website first." >&2; exit 1; }
-GH=https://github.com/Global-Strategic-Technologies/gst-website/blob/main
+GH=https://github.com/Global-Strategic-Technologies/gst-website/blob/master
 
 # Design system
 cp "$DS/_ds_bundle.css" "$B/design-system/gst.css"
@@ -39,7 +39,10 @@ cp "$W/public/images/logo/gst-delta-icon-teal-stroke-thick.svg" "$B/assets/logo/
 cp "$W/public/images/icon.svg"        "$B/assets/logo/gst-icon.svg"
 cp "$W/public/branding/logo-bimi.svg" "$B/assets/logo/gst-logo-bimi.svg"
 cp "$W/public/favicon.svg" "$W/public/images/favicon.ico" "$W/public/images/apple-touch-icon.png" \
-   "$W/public/images/web-app-manifest-192.png" "$W/public/images/web-app-manifest-512.png" "$B/assets/favicon/"
+   "$W/public/images/web-app-manifest-192.png" "$W/public/images/web-app-manifest-512.png" \
+   "$W/public/images/web-app-maskable-192.png" "$W/public/images/web-app-maskable-512.png" "$B/assets/favicon/"
+mkdir -p "$B/assets/favicon/palettes"
+cp "$W/public/favicons/"palette-*.svg "$B/assets/favicon/palettes/"
 cp "$W/public/og-image.png" "$B/assets/social/og-image-1200x630.png"
 
 # Provenance

@@ -26,7 +26,7 @@ Conventions, best practices, and patterns for all CSS work on the GST Website.
 
 1. Use CSS variables for all colors, spacing, and typography — see [VARIABLES_REFERENCE.md](./VARIABLES_REFERENCE.md)
 2. Use typography utility classes — see [TYPOGRAPHY_REFERENCE.md](./TYPOGRAPHY_REFERENCE.md)
-3. Test in both light and dark themes and all 6 palettes
+3. Test in all four theme states (light, dim light, dim dark, dark — see [§ Dim states](#dim-states-four-state-theme)) and every palette
 4. Check responsive behavior at 768px and 480px breakpoints
 
 **Styling text:** Pick a utility class from [TYPOGRAPHY_REFERENCE.md](./TYPOGRAPHY_REFERENCE.md) (`.brutal-heading-lg`, `.brutal-text-base`, `.brutal-label`, etc.). Dark theme colors switch automatically.
@@ -39,7 +39,7 @@ Conventions, best practices, and patterns for all CSS work on the GST Website.
 
 ## In-repo Control Examples
 
-**The brand page is the living control-example surface for this design system — start there before building anything visual.** It renders real tokens and real component classes at runtime and reacts to the theme toggle and all six palettes, so what you see is what the system currently produces, not a static mockup.
+**The brand page is the living control-example surface for this design system — start there before building anything visual.** It renders real tokens and real component classes at runtime and reacts to the theme toggle and every palette, so what you see is what the system currently produces, not a static mockup.
 
 - **Page**: [src/pages/brand.astro](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/pages/brand.astro) — composition, section layout, and the specimen styling
 - **Specimen components**: [src/components/brand/](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/components/brand/) — color swatches with live token values (`BrandColors`, `ColorSpecimens`), the typography/spacing/transition ladders (`BrandTypography`), real production component specimens and state matrices (`BrandComponents`, `BrandUILibrary`), accessibility patterns (`BrandAccessibility`), and the palette editor (`PalettePanel`)
@@ -125,16 +125,16 @@ when it was removed: a Total of 160 against rows summing to 152, over a `:root` 
 | --------------------- | ------------------------------------------------------------------------------ |
 | Colors (brand + text) | `--color-primary`, `--bg-light`, `--text-primary`                              |
 | Primary opacity scale | `--color-primary-02` through `--color-primary-65`                              |
-| Component colors      | `--filter-chip-bg`, `--service-card-text`, `--footer-bg`                       |
+| Component colors      | `--filter-chip-bg`, `--cta-box-text`, `--footer-bg`                            |
 | Tool-domain colors    | `--hub-authority-blue`, `--dm-*`, `--icg-*`, `--techpar-*`, `--regmap-*`       |
-| Misc colors           | `--checkerboard-line`, `--theme-toggle-color`                                  |
+| Misc colors           | `--checkerboard-line`                                                          |
 | Spacing               | `--spacing-xs` through `--spacing-3xl`, plus `--spacing-1_25`/`-1_75`/`-2_5xl` |
 | Gaps                  | `--gap-tight` through `--gap-extra-wide`                                       |
 | Typography            | `--font-family`, `--font-weight-*`, `--text-*`                                 |
 | Transitions           | `--transition-fast`, `--transition-normal`, `--transition-slow`                |
 | Shadows               | `--shadow-sm`, `--shadow-md`, `--shadow-lg`                                    |
 
-> Note: Dark theme variables use `light-dark()` in `:root` — only `color-scheme: dark` and 2 RGB triplets remain in the `html.dark-theme` block. 13 utility classes are defined across `variables.css`, `typography.css`, and `interactions.css`.
+> Note: Dark theme variables use `light-dark()` in `:root` — only `color-scheme: dark` and 2 RGB triplets remain in the `html.dark-theme` block. Utility classes are defined across `variables.css`, `typography.css`, and `interactions.css` (see [Available Utility Classes](#available-utility-classes) below).
 
 **A token name that doesn't exist fails the build.** An undefined custom property does not error
 in the browser: the declaration becomes invalid at computed-value time and the property silently
@@ -155,9 +155,9 @@ Full variable catalog: [VARIABLES_REFERENCE.md](./VARIABLES_REFERENCE.md)
 ```
 src/styles/
 ├── variables.css           # Design tokens + utility classes (flex-center, text-label, etc.)
-├── palettes.css            # Alternative color palette definitions (6 palettes, light + dark theme)
-├── typography.css          # 11 semantic text utilities (.brutal-heading-*, .brutal-text-*, .brutal-label-*, .nav-link, .button-text-*)
-├── interactions.css        # Interactive state patterns (.interactive, .link-interactive, .control-*, .focus-outline-*)
+├── palettes.css            # Alternative color palette definitions (light + dark theme)
+├── typography.css          # Semantic text utilities (.brutal-heading-*, .brutal-text-*, .brutal-label-*, .brutal-data-*)
+├── interactions.css        # Interactive state patterns (.interactive, .link-interactive, .focus-outline-*, .brutal-* variants, .delta-chevron)
 ├── global.css              # Page layout, utilities, responsive rules — imports component modules below
 └── components/             # Extracted component-specific styles (from global.css)
     ├── tool-ui.css          # Tool bench notes, action bars, methodology panels
@@ -308,8 +308,8 @@ the space itself, which leaves no source whitespace to delete. Fourteen of the t
 | `&#32;` | a character reference is not source whitespace                            | plain template regions — no expression needed, survives Prettier rewrap |
 | `{' '}` | compiles to an expression (`${' '}`), not a text node a compressor can see | JSX-ish regions that already carry expressions                        |
 
-`&#32;` is the default. `{' '}` is equally sound and already load-bearing in the repo — five
-sites in `diligence-machine/index.astro` and one in `CTABox.astro`, the latter with a comment
+`&#32;` is the default. `{' '}` is equally sound and already load-bearing in the repo — in
+`diligence-machine/index.astro`'s markup and in `CTABox.astro`, the latter with a comment
 saying so. Do **not** reach for `&nbsp;`: it would wrongly suppress wrapping at that point.
 Either form collapses harmlessly against real whitespace if compression is ever turned off.
 
@@ -462,6 +462,19 @@ import '../../styles/my-component.css';
 ---
 ```
 
+### Lazily loaded stylesheets (built-in-the-browser features)
+
+A feature whose markup is built by a lazily imported module (only some browsers ever load it, e.g. ambient motion, BL-035) keeps its stylesheet **beside that module, outside `src/styles/`, imported with `?inline`** and inserted as a `<style>` when the module runs:
+
+```ts
+import css from './my-feature.css?inline';
+```
+
+- **Not a plain `import './my-feature.css'`.** Astro attaches a CSS module to every page that owns the importing script, walking dynamic importers too, so a plain import ships the sheet to every visitor. E2E runs on the dev server, where Vite injects the CSS only when the module runs, so no browser test can see the mistake; `tests/unit/ambient-lazy-css-guard.test.ts` enforces `?inline` for the ambient modules.
+- **Not under `src/styles/`.** Every file there belongs to the design-sync `@import` closure (Guard 2) and is published to claude.ai/design, which deliberately leaves ambient markup out (`.design-sync/NOTES.md`).
+- **The rules are unscoped**, since JS-built DOM carries no `data-astro-cid`. Anchor them on the feature's root class so they never depend on load order against `form.css` and friends.
+- Server-rendered placeholders keep the few rules that must hold before the module runs (layout, reduced motion) in their own scoped `<style>`, so the orphan-class scan stays satisfied.
+
 ### Card grids: the grid owns the columns, the card owns itself
 
 A card must **not** set `max-width` / `margin: 0 auto` on itself. That is page positioning
@@ -558,15 +571,11 @@ page before it was caught.
 - `.flex-between` — space-between flexbox
 - `.text-uppercase` — uppercase + letter-spacing
 - `.text-label` — label styling (xs, bold, uppercase, muted)
-- `.interactive-element` — transition + primary color on hover
-- `.interactive-focus` — 2px primary outline
 
 **From `interactions.css`:**
 
 - `.interactive` — transition + primary hover + focus-visible outline
 - `.link-interactive` — link with underline animation
-- `.control-hover` / `.control-active` — button state classes
-- `.accent-light-bg` / `.accent-light-bg-hover` — accent backgrounds
 - `.focus-outline` / `.focus-outline-sm` — focus ring utilities
 - `.delta-chevron` — collapse/expand toggle indicator using the brand delta triangle
 
@@ -614,7 +623,7 @@ Use this pattern only for `::before`/`::after` pseudo-elements where an Astro co
 
 - Always prefer `DeltaIcon.astro` over `<img>` tags — `<img>` cannot inherit CSS colors
 - `.bullet-icon` and `.delta-icon` classes include `color: var(--color-primary)` for palette awareness — brand teal stays teal as ink by decision ([ADR-0035](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/docs/adr/0035-ink-tokens-for-text-on-light-surfaces.md))
-- The static SVG file (`public/images/logo/gst-delta-icon-teal-stroke-thick.svg`) has hardcoded teal — keep it for favicon, RSS, and external contexts only
+- The static SVG file (`public/images/logo/gst-delta-icon-teal-stroke-thick.svg`) has hardcoded teal — keep it for `mask-image` uses, RSS, and external contexts only. The favicon is a separate file (`public/favicon.svg`, plus its palette variants — see § Browser chrome)
 
 ---
 
@@ -641,6 +650,10 @@ html.dark-theme {
 }
 ```
 
+### Dim states (four-state theme)
+
+Two intermediate states sit between light and dark: **dim light** (`html.theme-dim`) and **dim dark** (`html.dark-theme.theme-dim`). The palette panel's theme button and the footer toggle both cycle all four, and their deltas turn in step. `theme-dim` re-declares only the surface tokens (`--bg-*`, `--surface-*-bg`, section backgrounds), each as `light-dark(dim light, dim dark)`, so **the same rule as above applies: use tokens and dim works automatically.** A hardcoded `#ffffff` or `#0a0a0a` will not dim. Mapping and rationale: [ADR-0038](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/docs/adr/0038-four-state-theme-dim-light-dim-dark.md); state logic: `src/scripts/theme-state.ts`.
+
 ### Preferred: `light-dark()` (for all color properties)
 
 Use `light-dark(light-value, dark-value)` directly in base rules. Works for `color`, `background`, `border-color`, `fill`, `stroke`, `box-shadow` (color parts), and any property accepting a `<color>` value.
@@ -665,6 +678,30 @@ Use `light-dark(light-value, dark-value)` directly in base rules. Works for `col
   opacity: 0.8;
 }
 ```
+
+### Browser chrome (`theme-color`)
+
+The mobile status bar follows the **site header's surface**, so it blends with the page in every theme state and on every day of the rotation ([ADR-0040](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/docs/adr/0040-daily-look-rotation.md)). This applies to browsers that honour `<meta name="theme-color">`: Chromium-based mobile browsers, which includes Android Chrome and an installed PWA. No iOS behaviour is claimed. The site's theme is its own classes on `<html>`, not the OS setting, so there is one tag and no `prefers-color-scheme` pair.
+
+- **Before first paint**: the inline look block in [BaseLayout.astro](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/layouts/BaseLayout.astro) writes `headerSurfaces[theme]`, a copy of the header's four surfaces, into the tag. Brand teal is the no-JS fallback.
+- **After load**: [theme-color.ts](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/scripts/theme-color.ts), loaded by [Header.astro](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/components/Header.astro), copies the header's computed `background-color` into the tag. It re-syncs on every class or style change on `<html>`: a theme cycle, a palette switch, or a swatch-editor edit. The steady state therefore can't drift from `variables.css`.
+- **The manifest stays teal.** `site.webmanifest`'s `theme_color` is read once, at install time, for the splash screen and app switcher.
+- **Changing the header's background or its tokens?** Update `headerSurfaces` too. [theme-color.test.ts](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/tests/unit/theme-color.test.ts) fails until the copy matches `variables.css` again.
+
+**The tab icon** follows the day's **palette** but not its theme. On palette 0 it is `public/favicon.svg`. On every other palette it is `public/favicons/palette-N.svg`: the same delta with only the stroke recoloured to that palette's **light-theme** primary.
+
+- The tab strip belongs to the browser and follows the browser's theme, not the site's. Dark-theme primaries include white (Monolith), which would vanish on a light tab strip.
+- The delta's geometry, weight and join never change in a variant.
+- The inline look block sets the restored palette's icon before first paint, and [favicon.ts](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/scripts/favicon.ts) (also loaded by Header) follows a palette pick.
+- Variants are rendered by `npm run media:pwa-assets`. [pwa-assets.test.ts](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/tests/integration/pwa-assets.test.ts) fails when a palette has no variant, or when a variant drifts from `favicon.svg` or its primary.
+
+**The install icons** (`site.webmanifest`, plus the `apple-touch-icon` BaseLayout links) are rendered from [icon.svg](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/public/images/icon.svg) by `npm run media:pwa-assets`, which uses Playwright and adds no image library. Re-render after changing icon.svg.
+
+- **`any`** (`web-app-manifest-{192,512}.png`): the mark as it stands, frame and all.
+- **`maskable`** (`web-app-maskable-{192,512}.png`): full-bleed white with no frame. The whole mark is scaled uniformly into the centre, so Android's circle or squircle mask never cuts ink. The renderer measures every padded icon and fails if any ink lies beyond the safe zone (40% of the width from the centre).
+- **`apple-touch-icon.png`**: the maskable composition, so iOS's rounded corners never cut the frame.
+- **Screenshots** (`images/screenshots/home-{narrow,wide}.jpg`, from `-- --screenshots` against a dev server): the home page with the look pinned to palette 0, light theme, motion off. They are **write-once**, like the consent still: re-render when the home page changes materially, because nothing guards their staleness.
+- [pwa-assets.test.ts](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/tests/integration/pwa-assets.test.ts) keeps every file the manifest names present and true to its declared size, keeps `maskable` separate from `any`, and holds the screenshots to Chrome's size and ratio limits.
 
 ### Adding Dark Theme Support to New Components
 
@@ -765,7 +802,7 @@ Use the canonical `--z-*` tokens from [variables.css](https://github.com/Global-
 
 | Token                  | Value   | Usage                                        |
 | ---------------------- | ------- | -------------------------------------------- |
-| `--z-negative`         | `-1`    | `body::before` background grid               |
+| `--z-negative`         | `-1`    | Behind content (published; no in-repo consumer) |
 | `--z-base`             | `1`     | Normal content stacking                      |
 | `--z-raised`           | `5`     | Tool content layers (maps, charts)           |
 | `--z-sticky`           | `10`    | Sticky headers, dropdowns anchored to content |
@@ -903,9 +940,12 @@ screen worth printing. Add the block when a tool's on-screen result **is** the a
 
 ```css
 @media print {
-  /* Hide interactive elements */
-  .site-header,
-  footer,
+  /* Hide interactive elements. Header and Footer already hide themselves in
+     print. Chrome rendered by OTHER components (Breadcrumb, HubHeader, map
+     controls) needs :global(): a scoped selector never matches another
+     component's markup. tests/unit/scoped-selector-foreign-element.test.ts
+     flags a scoped class this file never renders. */
+  :global(.breadcrumb),
   .actions,
   [data-view='landing'],
   [data-view='wizard'] {
@@ -1005,15 +1045,13 @@ Hub tools use the standardized `.brutal-tool-shell` class defined in `global.css
 
 ### Skeleton Loading Placeholders
 
-For components that load content asynchronously, use the skeleton loading pattern. The `@keyframes pulse` animation and the classes below are defined in [`src/styles/components/skeleton.css`](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/styles/components/skeleton.css).
+For components that load content asynchronously, use the skeleton loading pattern. The classes below and their `brutal-blink` animation are defined in [`src/styles/components/skeleton.css`](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/styles/components/skeleton.css).
 
 **Canonical reference**: the live specimens on [`/brand`](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/pages/brand.astro) — see `src/components/brand/BrandComponents.astro`, which is the in-repo control example for this pattern.
 
 > Do **not** reach for a skeleton to defer a page's primary content **on a page you want indexed**. Crawlers run JS on a deferred queue and judge the shell, so the page gets rated on whatever the skeleton is standing in for. `/hub/radar` is the exception that proves the rule rather than a violation of it: its feed _is_ deferred behind a skeleton, and that is fine precisely because the page is `noindex` — a rotating feed with no per-item permalinks is not an indexable page type. See [ADR-0012](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/docs/adr/0012-rotating-feeds-are-noindex.md) and [RADAR.md § Why the feed is a server island](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/docs/hub/RADAR.md). If you are deferring primary content on an indexable page, you have the wrong tool.
 
-**Global classes** — two families, and they are not interchangeable.
-
-Brutalist (current design system; what new work should use):
+**Global classes**:
 
 | Class                      | Description                                   |
 | -------------------------- | --------------------------------------------- |
@@ -1021,22 +1059,12 @@ Brutalist (current design system; what new work should use):
 | `.brutal-skeleton-bar--sm` | Smaller bar variant (0.625rem height)         |
 | `.brutal-skeleton-dot`     | Square placeholder (8px, `border-radius: 0`)  |
 
-These are outlined, not filled: `background: transparent` with a `1px solid var(--color-primary)` border, animated with the stepped `brutal-blink`. `RadarFeedSkeleton.astro` is the in-repo consumer.
-
-Legacy (soft/filled, retained for existing callers):
-
-| Class               | Description                                   |
-| ------------------- | --------------------------------------------- |
-| `.skeleton-bar`     | Rectangular placeholder bar (0.875rem height) |
-| `.skeleton-bar--sm` | Smaller bar variant (0.625rem height)         |
-| `.skeleton-dot`     | Circular placeholder (8px)                    |
-
-These use `var(--accent-light-bg-hover)` for background color (auto-switches in dark theme) and the smooth `pulse` animation.
+These are outlined, not filled: `background: transparent` with a `1px solid var(--color-primary)` border, animated with the stepped `brutal-blink`. `RadarFeedSkeleton.astro` is the reference in-repo consumer.
 
 ```html
 <!-- Example: text block skeleton -->
-<div class="skeleton-bar" style="width: 80%"></div>
-<div class="skeleton-bar skeleton-bar--sm" style="width: 40%; animation-delay: 0.3s"></div>
+<div class="brutal-skeleton-bar" style="width: 80%"></div>
+<div class="brutal-skeleton-bar brutal-skeleton-bar--sm" style="width: 40%; animation-delay: 0.3s"></div>
 ```
 
 **Convention**:
@@ -1137,7 +1165,7 @@ Colors must use CSS variables so dark theme works automatically.
 
 > **This is mechanically enforced.** Since July 28, 2026 a hardcoded color is a stylelint **error** — it fails `npm run lint:css`, the pre-commit hook, and CI. The rule covers `/color$/`, `fill`, `stroke`, `box-shadow`, `text-shadow`, and the color slot of `border`/`background`/`outline` shorthands. Any value that references a token passes, including `light-dark(var(--a), var(--b))`, `color-mix(in srgb, var(--x) 12%, transparent)` and `rgba(var(--rgb), .5)`. Mechanics: [DEVELOPER_TOOLING.md § stylelint configuration notes](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/docs/development/DEVELOPER_TOOLING.md).
 >
-> **Need a tint that has no token?** Reach for `color-mix(in srgb, var(--color-success) 12%, transparent)` before minting one — it stays correct across themes and all six palettes, which a frozen `rgba(46, 139, 87, 0.12)` does not. For neutral washes use the `--surface-*-bg` family; for modal/drawer backdrops use `--scrim-15…60`; for frosted edges use `--frost-highlight`/`--frost-edge`.
+> **Need a tint that has no token?** Reach for `color-mix(in srgb, var(--color-success) 12%, transparent)` before minting one — it stays correct across themes and every palette, which a frozen `rgba(46, 139, 87, 0.12)` does not. For neutral washes use the `--surface-*-bg` family; for modal/drawer backdrops use `--scrim-15…60`; for frosted edges use `--frost-highlight`/`--frost-edge`.
 >
 > **Two documented exceptions**, both legal because custom-property declarations are never checked by the rule:
 >
@@ -1157,7 +1185,7 @@ Colors must use CSS variables so dark theme works automatically.
 }
 ```
 
-Font sizes come from the `--text-*` scale. This is enforced at **warning** severity (not error) while 150 pre-existing off-scale literals are worked through — see [STYLES_REMEDIATION_ROADMAP.md § 14](./STYLES_REMEDIATION_ROADMAP.md) and BL-094. **New code should produce no new warnings.** Do not bulk-snap existing off-scale values to the nearest token: that changes rendered type, and the repo has no visual-regression coverage to catch a layout break.
+Font sizes come from the `--text-*` scale. This is enforced at **warning** severity (not error) while 150 pre-existing off-scale literals are worked through — see [BL-094](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/docs/development/BACKLOG.md#bl-094-off-scale-font-size-literals--type-scale-ruling--sweep-deferred), the authoritative record. **New code should produce no new warnings.** Do not bulk-snap existing off-scale values to the nearest token: that changes rendered type, and the repo has no visual-regression coverage to catch a layout break.
 
 ### 2. Duplicate Dark Theme Selectors
 
@@ -1306,7 +1334,7 @@ Three tiers: `--border-dark-subtle` (0.10), `--border-dark-default` (0.15), `--b
 - [ ] If new component-specific variables needed: added to both `:root` and `html.dark-theme` in `variables.css`
 - [ ] Tested in light theme
 - [ ] Tested in dark theme
-- [ ] Tested in all 6 palettes (PalettePanel pop-out — see [BRAND_GUIDELINES.md](./BRAND_GUIDELINES.md) § Alternative Palette System)
+- [ ] Tested in every palette (PalettePanel pop-out — see [BRAND_GUIDELINES.md](./BRAND_GUIDELINES.md) § Alternative Palette System)
 - [ ] Responsive at 768px breakpoint
 - [ ] Responsive at 480px breakpoint
 - [ ] Focus states visible in both themes
@@ -1321,10 +1349,6 @@ Three tiers: `--border-dark-subtle` (0.10), `--border-dark-default` (0.15), `--b
 - [BRAND_GUIDELINES.md](./BRAND_GUIDELINES.md) — Brand color palette, usage rules, and asset guidelines
 - [VARIABLES_REFERENCE.md](./VARIABLES_REFERENCE.md) — Complete design token catalog
 - [TYPOGRAPHY_REFERENCE.md](./TYPOGRAPHY_REFERENCE.md) — Typography utility classes
-- [STYLES_REMEDIATION_ROADMAP.md](./STYLES_REMEDIATION_ROADMAP.md) — Tracked initiatives for closing convention gaps
+- [STYLES_REMEDIATION_ROADMAP.md](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/docs/development/_archive/STYLES_REMEDIATION_ROADMAP.md) — The closed remediation initiatives 1–13 (archived; open styling work lives in [BACKLOG.md](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/docs/development/BACKLOG.md#css-and-design-system))
 - [CLAUDE_DESIGN_SYNC.md](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/docs/development/CLAUDE_DESIGN_SYNC.md) — This design system is published to claude.ai/design. **Renaming a `.brutal-*` class or a token requires a re-sync** — the published copy names classes explicitly and goes stale silently
 - [Development Backlog](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/docs/development/BACKLOG.md) — All open development initiatives
-
----
-
-**Last Updated**: July 28, 2026 (in-repo control examples section; z-index token scale; frosted `--heavy` blur corrected to match code; 6-palette checklist item)

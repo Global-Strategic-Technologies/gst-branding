@@ -37,6 +37,8 @@
   .asset .previews img { max-width: 100%; max-height: 100%; display: block; }
   .asset .previews img.sm { width: 48px; }
   .asset .previews img.md { width: 96px; }
+  .asset .previews img.xs { width: 28px; }
+  .asset .previews > div.row { display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: var(--spacing-sm); }
   .asset .meta { padding: var(--spacing-md); display: flex; flex-direction: column; gap: var(--spacing-xs); font-size: var(--text-sm); }
   .asset .meta p { margin: 0; }
   .asset code { font-size: var(--text-xs); color: var(--text-secondary); word-break: break-all; }
@@ -166,14 +168,26 @@
     <article class="asset">
       <div class="previews"><div class="on-light"><img class="md" src="assets/favicon/apple-touch-icon.png" alt="Apple touch icon"></div><div class="on-dark"><img class="md" src="assets/favicon/apple-touch-icon.png" alt="Apple touch icon on dark"></div></div>
       <div class="meta"><h3>Apple touch icon</h3><code>assets/favicon/apple-touch-icon.png</code> · 180×180
-        <p class="use"><b>Use:</b> <code>&lt;link rel="apple-touch-icon"&gt;</code>. Opaque dark background by design — iOS rounds the corners.</p>
+        <p class="use"><b>Use:</b> <code>&lt;link rel="apple-touch-icon"&gt;</code>. Same unframed composition as the maskable icons, so iOS's rounded corners never cut the mark.</p>
         <div class="dl"><a href="assets/favicon/apple-touch-icon.png" download>PNG</a></div></div>
     </article>
     <article class="asset">
       <div class="previews"><div class="on-light"><img class="md" src="assets/favicon/web-app-manifest-192.png" alt="PWA icon 192"></div><div class="on-dark"><img class="md" src="assets/favicon/web-app-manifest-512.png" alt="PWA icon 512"></div></div>
-      <div class="meta"><h3>PWA manifest icons</h3><code>assets/favicon/web-app-manifest-{192,512}.png</code>
-        <p class="use"><b>Use:</b> <code>manifest.webmanifest</code> icons for installable web apps and Android home screens.</p>
+      <div class="meta"><h3>PWA icons — any</h3><code>assets/favicon/web-app-manifest-{192,512}.png</code>
+        <p class="use"><b>Use:</b> manifest icons with <code>"purpose": "any"</code> — the mark as it stands, frame and all.</p>
         <div class="dl"><a href="assets/favicon/web-app-manifest-192.png" download>192</a><a href="assets/favicon/web-app-manifest-512.png" download>512</a></div></div>
+    </article>
+    <article class="asset">
+      <div class="previews"><div class="on-light"><img class="md" src="assets/favicon/web-app-maskable-192.png" alt="Maskable PWA icon 192" style="border-radius:50%"></div><div class="on-dark"><img class="md" src="assets/favicon/web-app-maskable-512.png" alt="Maskable PWA icon 512" style="border-radius:50%"></div></div>
+      <div class="meta"><h3>PWA icons — maskable</h3><code>assets/favicon/web-app-maskable-{192,512}.png</code>
+        <p class="use"><b>Use:</b> manifest icons with <code>"purpose": "maskable"</code> (Android home screens). Full-bleed white, no frame, all ink inside the 40% safe zone so a circle or squircle mask never clips it. Never reuse the <code>any</code> icons as maskable.</p>
+        <div class="dl"><a href="assets/favicon/web-app-maskable-192.png" download>192</a><a href="assets/favicon/web-app-maskable-512.png" download>512</a></div></div>
+    </article>
+    <article class="asset">
+      <div class="previews"><div class="on-light row"><img class="xs" src="assets/favicon/palettes/palette-1.svg" alt="Monolith tab icon"><img class="xs" src="assets/favicon/palettes/palette-2.svg" alt="Redline tab icon"><img class="xs" src="assets/favicon/palettes/palette-3.svg" alt="Admiralty tab icon"><img class="xs" src="assets/favicon/palettes/palette-4.svg" alt="Blaze tab icon"><img class="xs" src="assets/favicon/palettes/palette-5.svg" alt="Ultraviolet tab icon"><img class="xs" src="assets/favicon/palettes/palette-6.svg" alt="Phosphor tab icon"></div><div class="on-dark row"><img class="xs" src="assets/favicon/palettes/palette-1.svg" alt="Monolith tab icon on dark"><img class="xs" src="assets/favicon/palettes/palette-2.svg" alt="Redline tab icon on dark"><img class="xs" src="assets/favicon/palettes/palette-3.svg" alt="Admiralty tab icon on dark"><img class="xs" src="assets/favicon/palettes/palette-4.svg" alt="Blaze tab icon on dark"><img class="xs" src="assets/favicon/palettes/palette-5.svg" alt="Ultraviolet tab icon on dark"><img class="xs" src="assets/favicon/palettes/palette-6.svg" alt="Phosphor tab icon on dark"></div></div>
+      <div class="meta"><h3>Tab icons per palette</h3><code>assets/favicon/palettes/palette-{1–6}.svg</code>
+        <p class="use"><b>Use:</b> the website swaps the tab icon to match the day's palette (1 Monolith · 2 Redline · 3 Admiralty · 4 Blaze · 5 Ultraviolet · 6 Phosphor; palette 0 uses <code>favicon.svg</code>). Only the stroke changes, to the palette's light-theme primary. For anything outside the site, use the teal <code>favicon.svg</code>.</p>
+        <div class="dl"><a href="assets/favicon/palettes/palette-1.svg" download>1</a><a href="assets/favicon/palettes/palette-2.svg" download>2</a><a href="assets/favicon/palettes/palette-3.svg" download>3</a><a href="assets/favicon/palettes/palette-4.svg" download>4</a><a href="assets/favicon/palettes/palette-5.svg" download>5</a><a href="assets/favicon/palettes/palette-6.svg" download>6</a></div></div>
     </article>
   </div>
 </section>
