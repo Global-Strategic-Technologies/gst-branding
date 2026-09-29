@@ -16,14 +16,14 @@ Complete brand palette, usage rules, and asset guidelines for the GST website.
 
 ### Neutral Backgrounds
 
-| Role              | Hex       | Variable                       | Usage                                  |
-| ----------------- | --------- | ------------------------------ | -------------------------------------- |
-| **White**         | `#ffffff` | `--bg-light`                   | Primary page background (light theme)  |
-| **Off-white**     | `#f5f5f5` | `--bg-light-alt`               | Secondary background — sections, cards |
-| **Light gray**    | `#eeeeee` | `--services-bg`, `--footer-bg` | Services section, footer               |
-| **Near black**    | `#0a0a0a` | `--bg-dark`                    | Primary background (dark theme)        |
-| **Dark gray**     | `#1a1a1a` | `--bg-dark-secondary`          | Secondary dark background              |
-| **Dark charcoal** | `#141414` | `--bg-dark-tertiary`           | Tertiary dark background               |
+| Role              | Hex       | Variable              | Usage                                  |
+| ----------------- | --------- | --------------------- | -------------------------------------- |
+| **White**         | `#ffffff` | `--bg-light`          | Primary page background (light theme)  |
+| **Off-white**     | `#f5f5f5` | `--bg-light-alt`      | Secondary background — sections, cards |
+| **Light gray**    | `#eeeeee` | `--footer-bg`         | Footer                                 |
+| **Near black**    | `#0a0a0a` | `--bg-dark`           | Primary background (dark theme)        |
+| **Dark gray**     | `#1a1a1a` | `--bg-dark-secondary` | Secondary dark background              |
+| **Dark charcoal** | `#141414` | `--bg-dark-tertiary`  | Tertiary dark background               |
 
 ### Text Colors
 
@@ -190,7 +190,7 @@ Privacy and Terms pages use "we," "us," "our" per legal convention.
 ## Accessibility
 
 - **Contrast**: All text/background combinations should meet WCAG 2.1 AA contrast ratios (4.5:1 for normal text, 3:1 for large text)
-- **Focus indicators**: 2px solid `--color-primary` outline with 2px offset via `.interactive-focus` utility or `:focus-visible` on `.brutal-*` components
+- **Focus indicators**: 2px solid `--color-primary` outline with 2px offset via the `.focus-outline` utility or `:focus-visible` on `.brutal-*` components
 - **Color alone**: Never use color as the sole indicator of state — always pair with text, icons, or patterns
 - **Touch targets**: 44x44px per WCAG 2.5.5 (Level **AAA**) on the guarded families; **AA's 24x24 (2.5.8) everywhere else**.
 
@@ -250,22 +250,74 @@ Tool-specific status variables (e.g. `--dm-success`, `--techpar-kpi-negative`) m
 
 ## Alternative Palette System
 
-Six color palettes are defined in `src/styles/palettes.css`, enabling stakeholders to preview the entire site in alternative brand directions. The active palette is applied as a class on `<html>` (e.g., `html.palette-1`), mirroring the dark-theme pattern, and persisted via `localStorage('palette')`.
+The default palette and its alternatives are defined in `src/styles/palettes.css`. All seven are live: **the site's look rotates daily** ([ADR-0040](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/docs/adr/0040-daily-look-rotation.md)). The palette follows the weekday, Monday = 0 through Sunday = 6, and the theme follows the week of the month: days 1–7 light, 8–14 dim light, 15–21 dim dark, 22 to the end dark. Both use the visitor's local clock. The active palette is applied as a class on `<html>` (e.g., `html.palette-1`), mirroring the dark-theme pattern.
 
-| ID  | Name                     | Primary           | Secondary         | Character                               |
-| --- | ------------------------ | ----------------- | ----------------- | --------------------------------------- |
-| 0   | **Current** (production) | Teal `#05cd99`    | Amber `#CC8800`   | The baseline                            |
-| 1   | **Steel Authority**      | Cobalt `#1e40af`  | Magenta `#db2777` | PE gravitas with an unexpected edge     |
-| 2   | **Indigo Signal**        | Violet `#7c3aed`  | Lime `#84cc16`    | Breaks every finance-blue convention    |
-| 3   | **Copper Forge**         | Rust `#b45309`    | Cyan `#0891b2`    | Industrial heat meets cold precision    |
-| 4   | **Jade Edge**            | Emerald `#059669` | Rose `#f43f5e`    | Current teal pushed to its boldest form |
-| 5   | **Shadow Garden**        | Forest `#166534`  | Violet `#a855f7`  | Terminal in an old-growth forest        |
+| ID  | Name                 | Primary          | Secondary         | Character                                |
+| --- | -------------------- | ---------------- | ----------------- | ---------------------------------------- |
+| 0   | **Current** (Monday) | Teal `#05cd99`   | Amber `#CC8800`   | The baseline                             |
+| 1   | **Monolith**         | Gray `#8e8e8e`   | Gray `#595959`    | Black and white, grayscale everything    |
+| 2   | **Redline**          | Red `#ff2424`    | Yellow `#ffd400`  | Eye-bleeding signal red, loud on purpose |
+| 3   | **Admiralty**        | Blue `#5a8af2`   | Amber `#ff9f1c`   | Navy depth, signal blue, cold cyan edge  |
+| 4   | **Blaze**            | Orange `#ff6a00` | Blue `#1d4ed8`    | Safety orange against electric blue      |
+| 5   | **Ultraviolet**      | Purple `#c145ff` | Lime `#a3e635`    | Vivacious violet, nightclub energy       |
+| 6   | **Phosphor**         | Green `#1fd65f`  | Fuchsia `#ff4fd8` | Terminal phosphor, fuchsia and crimson   |
+
+**Adding a palette:** decide its weekday in `DAY_TO_PALETTE` (`src/scripts/daily-look.ts`; seven palettes fill the seven days, and `tests/unit/daily-look.test.ts` fails until the new one has a place, see ADR-0040). Also add it to the `:not(.palette-1, …, .palette-6)` lists in `palettes.css` § Dim-light inks, or it inherits palette 0's dim ink values ([ADR-0038](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/docs/adr/0038-four-state-theme-dim-light-dim-dark.md)), and to the `ALT_PALETTES` list in `tests/integration/ink-token-contrast.test.ts`, which measures its inks. The PalettePanel tabs, including the mobile header grid, size themselves from `src/data/palettes.ts`.
+
+In every alternative palette the status colours are drawn from the palette itself rather than generic green/yellow/red: success follows the primary, warning the secondary, and error the palette's accent (grayscale in Monolith). Tell statuses apart by label, not by hue alone, in those palettes.
 
 Each palette overrides the 9 core tokens (`--color-primary`, `--color-primary-dark`, `--color-secondary`, `--color-success`, `--color-warning`, `--color-error`, `--color-authority`, `--color-distinguish`, `--color-subdued`) plus derived accent/border/opacity scales. All tool-domain colors cascade automatically.
 
 **How to preview:** Open the PalettePanel on the `/brand` page (right-edge tab bar). Click the middle delta icon to "pop out" the panel to all pages.
 
-**Important:** Palette 0 is the production palette. Alternative palettes are for stakeholder review only — they are not deployed to production.
+### Picks, colour edits and the rotation
+
+- **A pick lasts until midnight.** Choosing a palette tab, the panel's theme button or the footer toggle overrides the rotation for the rest of that local day. The next day's first page load shows the rotation again. Palette and theme are tracked separately: picking a theme leaves the palette on the rotation, and the reverse. Each pick is stored with a date stamp (`localStorage` `palette` + `palette-date`, `theme` + `theme-date`).
+- **Picks saved before the rotation launched count as expired**, so every visitor starts on the rotation.
+- **Colour edits belong to the palette they were made on.** They show only while that palette is on screen, and switching palettes wipes them, as before.
+- **Launch cleared existing colour edits**, because they carried no palette tag.
+- **A palette's edits come back on its weekday only if the site wasn't opened in between.** Opening it on another palette's day clears them.
+- An open tab does not switch at midnight; the change applies on the next page load.
+
+---
+
+## Ambient Motion
+
+The homepage hero, and optionally the whole homepage or every page, can carry a quiet, CSS-only motion layer behind its content ([ADR-0039](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/docs/adr/0039-ambient-motion-is-a-per-browser-design-setting.md)). **It is on for every visitor by default** (since 2026-09-25): all six effects, on every page, at pace 110, with strengths Grid Pulse 15, Glow Shift 40, Scan Sweep 5, Data Rails 20, Delta Drift 30 and Delta Arrows 45. Each browser can change or switch it off in the palette panel.
+
+| Effect       | What moves                                                                       |
+| ------------ | -------------------------------------------------------------------------------- |
+| Grid Pulse   | Accent cells breathe in and out on the 50px lattice                              |
+| Glow Shift   | Two slow radial washes drift across the hero                                     |
+| Scan Sweep   | A band falls down the hero, slowing and fading as it goes                        |
+| Data Rails   | Faint rails in four directions; each fires one mark, then stays dark             |
+| Delta Drift  | Brand deltas (the `DeltaIcon` geometry) float and turn a few degrees             |
+| Delta Arrows | Clusters of brand deltas shoot from bottom-left to top-right, pulsing in and out |
+
+**How to use it.** Wherever the PalettePanel appears (always on `/brand`, and on any page once it is popped out), click the **Motion** button on the panel's right-edge rail. It is a delta with two speed strokes, and it is lit while any effect is on. It opens the panel and jumps to the **Ambient Motion** section, the last section, below the colour swatches. On a phone, open the sheet first; the Motion button is in its header row.
+
+- Toggle any number of effects; there is no "off" choice, since nothing selected means a still hero. Switching every effect off is remembered, so that browser stays still. **Reset motion** forgets the choice and returns to the default.
+- Set each effect's strength. 50 reproduces the approved prototype.
+- **Pace** speeds up or slows down all of them together.
+- **Scope** sets where it draws:
+  - **Hero**: the homepage hero only.
+  - **Homepage**: the hero plus a background behind the rest of the homepage.
+  - **Every page** (the default): that background on every page of the site.
+
+  The background scrolls with the page and repeats every screen, so a long page is as lively as a short one. Opaque sections (hero bands, CTA boxes, portfolio cards) cover it, as a background should, and it starts below the hero on any page that has one.
+
+- The live preview is under UI Component Library → Marketing Components → Hero Ambient Motion. The same settings apply to the homepage (`/`, `/es/`, `/pt/`).
+- Motion starts just after the page has loaded and fades in, so it never slows the page's first paint. A browser that switched it off, or prefers reduced motion, downloads none of it, and the panel's Motion controls load when the panel first opens.
+
+**Rules the layer keeps.**
+
+- Colour is only `--color-primary`, so it follows every palette, theme, dim state and colour edit.
+- It is `aria-hidden` and `pointer-events: none`.
+- In the hero it never animates more than 16 elements; a Delta Arrows cluster moves as one. With two or more effects on, or at ≤768px, each effect thins to its share.
+- In the Homepage and Every page scopes, at most 16 elements are in view per screen. Only on-screen tiles run, at most 32 where two meet, and any layer that has scrolled away stops.
+- `prefers-reduced-motion: reduce` hides the layer entirely, whatever is chosen.
+
+**Where the choice is stored.** It is saved in `localStorage['ambient-motion']`, separate from colour edits: picking another palette resets colour edits, never motion. The two Reset buttons are independent. At runtime it appears on `<html>` as `data-ambient`, `data-ambient-layered`, `data-ambient-scope`, `--ambient-<effect>` and `--ambient-pace`. These are set by the page, not design tokens, so they are not in `variables.css`.
 
 ---
 
@@ -299,7 +351,7 @@ All text and UI element pairings must meet WCAG 2.1 AA contrast minimums:
 | Large text (≥ 18px or ≥ 14px bold)                      | 3:1                    |
 | Non-text UI elements (borders, icons, focus indicators) | 3:1                    |
 
-**Fill versus ink ([ADR-0035](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/docs/adr/0035-ink-tokens-for-text-on-light-surfaces.md))**: brand and status colours are fill and border colours. Used as text on a light surface they fail AA — `--color-primary` 2.06:1, `--color-secondary`/`--color-warning` 2.96:1 — so text uses the `-ink` tokens. **Brand teal is exempt by decision**: `--color-primary` text, delta icons and focus rings stay teal, accepting 2.06:1 on light surfaces, because a darker substitute reads as a different brand colour. Inks are unchanged in dark theme. `tests/integration/ink-token-contrast.test.ts` guards every ink in all six palettes.
+**Fill versus ink ([ADR-0035](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/docs/adr/0035-ink-tokens-for-text-on-light-surfaces.md))**: brand and status colours are fill and border colours. Used as text on a light surface they fail AA — `--color-primary` 2.06:1, `--color-secondary`/`--color-warning` 2.96:1 — so text uses the `-ink` tokens. **Brand teal is exempt by decision**: `--color-primary` text, delta icons and focus rings stay teal, accepting 2.06:1 on light surfaces, because a darker substitute reads as a different brand colour. The alternative palettes' primaries follow the same ruling; Phosphor's neon `#1fd65f` is the faintest at 1.94:1 on white, kept by owner decision (2026-09-25) over a darker text green that no longer matched its buttons. Brand-colour text is still held to the 1.5:1 legibility floor, so dim light deepens Phosphor's primary (and its success colour, which follows it) to `#18b64f`, which clears that floor on every gray surface (`palettes.css` § Dim-light inks). Inks are unchanged in dark theme. `tests/integration/ink-token-contrast.test.ts` guards every ink in every palette, including dim light and dim dark.
 
 **`--text-muted` usage**: Opacity is `0.65` in light theme and `0.6` in dark, yielding ~5.4:1 on `#ffffff` and ~4.7:1 on `#0a0a0a`. Both clear the 4.5:1 AA floor for normal text, but only just — so restrict `--text-muted` to large text (≥ 18px), labels, captions, placeholder text, and decorative/disabled elements. For sustained normal-sized body text, use `--text-secondary` or higher. The live per-theme ratios are rendered on `/brand` under Accessibility → Color Contrast Ratios.
 
@@ -357,10 +409,4 @@ For multi-series charts (max 6 colors), use this sequence for adequate color vis
 - [STYLES_GUIDE.md](./STYLES_GUIDE.md) — CSS conventions, component patterns
 - [VARIABLES_REFERENCE.md](./VARIABLES_REFERENCE.md) — Complete design token catalog
 - [TYPOGRAPHY_REFERENCE.md](./TYPOGRAPHY_REFERENCE.md) — Typography utility classes
-- [STYLES_REMEDIATION_ROADMAP.md](./STYLES_REMEDIATION_ROADMAP.md) — Tracked remediation initiatives
-
----
-
-**Created**: March 23, 2026
-**Last Updated**: April 5, 2026
-**Status**: Complete — all requirements finalized
+- [STYLES_REMEDIATION_ROADMAP.md](https://github.com/Global-Strategic-Technologies/gst-website/blob/master/src/docs/development/_archive/STYLES_REMEDIATION_ROADMAP.md) — Closed remediation initiatives (archived; open styling work is in the BACKLOG's CSS and Design System section)

@@ -3,6 +3,28 @@
 Versions are date-based (`vYYYY.MM[.N]`) and tagged in git. Each entry records the
 gst-website commit the design system was snapshotted from (see `design-system/SOURCE.json`).
 
+## Unreleased
+
+Brand assets and guidelines synced to gst-website `df882402`
+(Global-Strategic-Technologies/gst-website#544). The design system (`design-system/`) is
+unchanged and still snapshots `ce8d58f5`.
+
+- **Install icons re-rendered** from `icon.svg`: `web-app-manifest-{192,512}.png` (`any`)
+  now carry the GST Mono outline wordmark instead of a fallback sans.
+- **New maskable icons** `web-app-maskable-{192,512}.png`: unframed, all ink inside the
+  40% safe zone. The website previously reused the `any` icons, which Android's mask clipped.
+- **`apple-touch-icon.png`** now uses the maskable composition (white, unframed) so iOS's
+  rounded corners don't cut the frame.
+- **New per-palette tab icons** in `assets/favicon/palettes/` (`palette-1…6.svg`):
+  `favicon.svg` with only the stroke recoloured to each palette's light-theme primary.
+- `assets/logo/gst-icon.svg` picks up the note that the PWA icons are rendered from it.
+- `guidelines/` re-mirrored from `src/docs/styles/`, including STYLES_GUIDE § Browser
+  chrome (tab icon and install icons).
+- Asset page shows the maskable and per-palette tab icons; the sync script and drift check
+  cover them, plus `favicon.ico`, `apple-touch-icon` and the manifest PNGs.
+- `sync-from-website.sh` rewrote guideline links to `blob/main`; now `blob/master`,
+  matching the drift check.
+
 ## v2026.09 — 2026-09-19
 
 Rebuilt from the gst-website design system (website commit `ce8d58f5`).

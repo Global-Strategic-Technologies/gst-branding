@@ -37,7 +37,8 @@ design-system/       The shipped CSS system (start here for anything on the web)
 assets/              Ready-to-use brand files
   logo/                  delta icon (teal / dark / white stroke), app icon, BIMI logo
   wordmark/              GST header lockup as SVG (font embedded) + @2x PNG, light & dark
-  favicon/               favicon.svg, favicon.ico, apple-touch-icon, PWA manifest icons
+  favicon/               favicon.svg, favicon.ico, apple-touch-icon, PWA icons (any + maskable)
+  favicon/palettes/      per-palette tab icons (palette-1…6.svg; palette 0 is favicon.svg)
   social/                OG image 1200×630, LinkedIn company logo (svg/png), LinkedIn cover
   social/templates/      editable post templates: 1080×1080, 1200×675, 1200×630
 

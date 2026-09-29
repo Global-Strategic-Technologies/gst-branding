@@ -31,9 +31,23 @@ jobs:
                       "public/images/icon.svg:assets/logo/gst-icon.svg" \
                       "public/branding/logo-bimi.svg:assets/logo/gst-logo-bimi.svg" \
                       "public/favicon.svg:assets/favicon/favicon.svg" \
+                      "public/images/favicon.ico:assets/favicon/favicon.ico" \
+                      "public/images/apple-touch-icon.png:assets/favicon/apple-touch-icon.png" \
+                      "public/images/web-app-manifest-192.png:assets/favicon/web-app-manifest-192.png" \
+                      "public/images/web-app-manifest-512.png:assets/favicon/web-app-manifest-512.png" \
+                      "public/images/web-app-maskable-192.png:assets/favicon/web-app-maskable-192.png" \
+                      "public/images/web-app-maskable-512.png:assets/favicon/web-app-maskable-512.png" \
                       "public/og-image.png:assets/social/og-image-1200x630.png"; do
             src=${pair%%:*}; dst=${pair##*:}
             cmp -s "gst-website/$src" "$dst" || { echo "::error::$dst differs from gst-website/$src"; fail=1; }
+          done
+          # Per-palette tab icons: same set, same bytes.
+          for src in gst-website/public/favicons/palette-*.svg; do
+            dst=assets/favicon/palettes/$(basename "$src")
+            cmp -s "$src" "$dst" || { echo "::error::$dst differs from or is missing vs gst-website"; fail=1; }
+          done
+          for dst in assets/favicon/palettes/palette-*.svg; do
+            [ -f "gst-website/public/favicons/$(basename "$dst")" ] || { echo "::error::$dst no longer exists in gst-website"; fail=1; }
           done
           [ $fail = 0 ] && echo "In sync with $(git -C gst-website rev-parse --short HEAD)"
           exit $fail
