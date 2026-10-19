@@ -5,6 +5,15 @@ gst-website commit the design system was snapshotted from (see `design-system/SO
 
 ## Unreleased
 
+`guidelines/` re-mirrored from gst-website `cd244697` (fixes the drift check, failing
+since 2026-10-05):
+
+- **VARIABLES_REFERENCE / TYPOGRAPHY_REFERENCE**: type scale extended (`--text-3xs`,
+  `--text-4xl…6xl`, role-named `--text-size-*` between-step and one-off tokens) and the new
+  § Type-scale ruling (ADR-0043): every font size is a token, enforced as a lint error.
+- **STYLES_GUIDE**: font-size rule updated to match; localization rules now cap nav labels
+  at 9 characters, forbid truncating headings, and add 360px to the verification widths.
+
 Brand assets and guidelines synced to gst-website `df882402`
 (Global-Strategic-Technologies/gst-website#544). The design system (`design-system/`) is
 unchanged and still snapshots `ce8d58f5`.
