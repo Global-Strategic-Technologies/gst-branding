@@ -5,6 +5,14 @@ gst-website commit the design system was snapshotted from (see `design-system/SO
 
 ## Unreleased
 
+`guidelines/STYLES_GUIDE.md` re-mirrored from gst-website `24cbf9fe` (fixes the drift check,
+failing since the scheduled run of 2026-11-02):
+
+- **Print**: printing from a dark theme now prints the light theme, so a print rule may use
+  theme tokens as well as hardcoded colors.
+- The `{' '}` whitespace example points at `HubDiligenceMachinePage.astro`, where the markup
+  moved.
+
 `guidelines/` re-mirrored from gst-website `cd244697` (fixes the drift check, failing
 since 2026-10-05):
 
