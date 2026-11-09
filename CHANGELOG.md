@@ -5,6 +5,13 @@ gst-website commit the design system was snapshotted from (see `design-system/SO
 
 ## Unreleased
 
+`guidelines/STYLES_GUIDE.md` re-mirrored from gst-website `c31d7ca6` (fixes the drift check,
+failing since the scheduled run of 2026-11-09):
+
+- **PWA**: the web manifest's `theme_color` is now the dark theme's surface, `#0a0a0a`, not
+  brand teal. An installed Android app paints its bottom navigation bar from it, and teal
+  clashed with six of the seven palettes.
+
 `guidelines/STYLES_GUIDE.md` re-mirrored from gst-website `24cbf9fe` (fixes the drift check,
 failing since the scheduled run of 2026-11-02):
 
